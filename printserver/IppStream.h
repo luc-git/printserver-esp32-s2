@@ -23,7 +23,7 @@
 #include "HttpStream.h"
 #include "Printer.h"
 
-#define IPP_SUPPORTED_VERSION 0x0101
+#define IPP_SUPPORTED_VERSION 0x0100
 
 #define IPP_SUCCESFUL_OK 0x0000
 #define IPP_CLIENT_ERROR_BAD_REQUEST 0x0400
