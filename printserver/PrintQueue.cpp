@@ -20,9 +20,7 @@
 size_t PrintQueue::availableFlashSpace = 0;
 
 void PrintQueue::updateAvailableFlashSpace() {
-  FSInfo fsinfo;
-  SPIFFS.info(fsinfo);
-  availableFlashSpace = fsinfo.totalBytes - fsinfo.usedBytes;
+  availableFlashSpace = SPIFFS.totalBytes() - SPIFFS.usedBytes();
 }
 
 PrintQueue::PrintQueue(String _printerId) {

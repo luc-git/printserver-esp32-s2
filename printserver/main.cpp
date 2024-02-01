@@ -15,10 +15,9 @@
     along with printserver-esp8266.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiServer.h>
-#include <SoftwareSerial.h>
 #include <FS.h>
 
 #include "WiFiManager.h"
@@ -26,7 +25,6 @@
 #include "DirectParallelPortPrinter.h"
 #include "ShiftRegParallelPortPrinter.h"
 #include "SerialPortPrinter.h"
-#include "USBPortPrinter.h"
 #include "PrintQueue.h"
 
 /*#define STROBE 10
@@ -44,18 +42,17 @@ ShiftRegParallelPortPrinter printer1("parallel", LPT_DATA, LPT_CLK, LPT_LATCH, L
 #define CH375_TX D3
 #define CH375_RX D6
 #define CH375_INT D4
-SoftwareSerial ch375swSer(CH375_RX, CH375_TX, false, 32);
-USBPortPrinter printer1("usb", ch375swSer, CH375_INT);
 
 SerialPortPrinter printer2("serial", &Serial);
-Printer* printers[] = {&printer1, &printer2};
+Printer* printers[] = {&printer2};
 
 #define PRINTER_COUNT (sizeof(printers) / sizeof(printers[0]))
 TcpPrintServer server(printers, PRINTER_COUNT);
 
+inline void printDebugAndYield();
+
 void setup() {
   Serial.begin(115200);
-  ch375swSer.begin(9600); //TODO: probably remove, should be handled by library or by the USBPortPrinter class
   Serial.println("boot ok");
   SPIFFS.begin();
   for (unsigned int i = 0; i < PRINTER_COUNT; i++) {
@@ -81,9 +78,7 @@ inline void printDebugAndYield() {
     Serial.printf("Free heap: %d bytes\r\n", ESP.getFreeHeap());
     Serial.println(WiFiManager::info());
     server.printInfo();
-    FSInfo fsinfo;
-    SPIFFS.info(fsinfo);
-    Serial.printf("[Filesystem] Total bytes: %d, Used bytes: %d, Max open files: %d\r\n", fsinfo.totalBytes, fsinfo.usedBytes, fsinfo.maxOpenFiles);
+    Serial.printf("[Filesystem] Total bytes: %d, Used bytes: %d, Max open files: %d\r\n", SPIFFS.totalBytes(), SPIFFS.usedBytes());
 
     PrintQueue::updateAvailableFlashSpace();
     yield();

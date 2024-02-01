@@ -16,7 +16,7 @@
  */
 
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 #include "WiFiManager.h"
 
 #define CONNECTION_TIMEOUT_MS 10*1000
@@ -36,7 +36,7 @@ void WiFiManager::wifi_setup() {
     Serial.println("WiFi connected");
   } else {
     Serial.println("Connection timed out, starting WiFi access point");
-    String apSSID = "ESP8266PrintServer" + String(ESP.getChipId());
+    String apSSID = "ESP32PrintServer" + String(ESP.getChipModel());
     if (WiFi.softAP(apSSID.c_str())) {
       apEnabled = true;
       Serial.println("SoftAP started with SSID " + apSSID);
@@ -68,12 +68,12 @@ String WiFiManager::getIP() {
 
 char* WiFiManager::getEncryptionTypeName(int t) {
   //Source: http://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/scan-class.html#encryptiontype
-  switch (t) {
-    case ENC_TYPE_WEP: return "WEP";
-    case ENC_TYPE_TKIP: return "WPA/PSK";
-    case ENC_TYPE_CCMP: return "WPA2/PSK";
-    case ENC_TYPE_NONE: return "Open network";
-    case ENC_TYPE_AUTO: return "WPA/WPA2/PSK";
+  switch (WiFi.encryptionType(t)) {
+    case WIFI_AUTH_WEP: return "WEP";
+    case WIFI_AUTH_WPA_PSK: return "WPA/PSK";
+    case WIFI_AUTH_WPA2_PSK: return "WPA2/PSK";
+    case WIFI_AUTH_OPEN: return "Open network";
+    case WIFI_AUTH_WPA_WPA2_PSK: return "WPA/WPA2/PSK";
     default: return "Unknown";
   }
 }

@@ -18,6 +18,7 @@
 #pragma once
 #include <Arduino.h>
 #include <FS.h>
+#include <SPIFFS.h>
 #include "Settings.h"
 
 class PrintQueue {
